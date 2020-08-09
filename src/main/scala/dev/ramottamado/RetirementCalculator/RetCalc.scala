@@ -23,11 +23,9 @@ object RetCalc {
   def simulatePlan(
     returns: Returns,
     nbOfMonthsSaving: Int,
-    nbOfMonthsInRetirement: Int,
-    netIncome: Int,
-    currentExpenses: Int,
-    initialCapital: Double
+    params: RetCalcParams
   ): (Double, Double) = {
+    import params._
     val capitalAtRetirement = futureCapital(
       returns,
       nbOfMonthsSaving,
@@ -37,7 +35,7 @@ object RetCalc {
     )
 
     val capitalAfterDeath = futureCapital(
-      returns,
+      OffsetReturns(returns, nbOfMonthsSaving),
       nbOfMonthsInRetirement,
       0,
       currentExpenses,
@@ -49,20 +47,15 @@ object RetCalc {
 
   def nbOfMonthsSaving(
     returns: Returns,
-    nbOfMonthsInRetirement: Int,
-    netIncome: Int,
-    currentExpenses: Int,
-    initialCapital: Int
+    params: RetCalcParams
   ): Int = {
+    import params._
     @tailrec
     def loop(months: Int): Int = {
       val (capitalAtRetirement, capitalAfterDeath) = simulatePlan(
         returns,
         months,
-        nbOfMonthsInRetirement,
-        netIncome,
-        currentExpenses,
-        initialCapital
+        params
       )
 
       if (capitalAfterDeath > 0.0)
