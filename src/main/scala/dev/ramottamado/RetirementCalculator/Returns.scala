@@ -6,9 +6,10 @@ object Returns {
 
   def monthlyRate(returns: Returns, month: Int): Double =
     returns match {
-      case FixedReturns(annualRate)    => annualRate / 12
-      case VariableReturns(returns)    => returns(month % returns.length).monthlyRate
-      case OffsetReturns(orig, offset) => monthlyRate(orig, month + offset)
+      case FixedReturns(annualRate)             => annualRate / 12
+      case VariableReturns(returns)             => returns(month % returns.length).monthlyRate
+      case OffsetReturns(orig, offset)          => monthlyRate(orig, month + offset)
+      case VariableReturn(monthId, monthlyRate) => monthlyRate
     }
 
 }
