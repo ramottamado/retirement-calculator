@@ -1,0 +1,6 @@
+{
+    "metals.javaHome": "/usr/lib/jvm/jdk-11.0.8",
+    "terminal.integrated.env.linux": {
+        "JAVA_HOME": "/usr/lib/jvm/jdk-11.0.8"
+    }
+}

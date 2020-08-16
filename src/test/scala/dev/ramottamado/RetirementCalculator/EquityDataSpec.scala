@@ -1,7 +1,7 @@
 package dev.ramottamado.RetirementCalculator
 
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 
 class EquityDataSpec extends AnyWordSpec with Matchers {
   "EquityData.fromResource" should {

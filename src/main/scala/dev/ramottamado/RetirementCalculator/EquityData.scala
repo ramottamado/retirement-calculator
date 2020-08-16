@@ -1,7 +1,6 @@
 package dev.ramottamado.RetirementCalculator
 
 import scala.io.Source
-import scala.annotation.meta.field
 
 case class EquityData(monthId: String, value: Double, annualDividend: Double) {
   val monthlyDividend = annualDividend / 12
