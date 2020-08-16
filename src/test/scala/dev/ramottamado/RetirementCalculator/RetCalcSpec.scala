@@ -9,7 +9,7 @@ class RetCalcSpec extends AnyWordSpec with Matchers with TypeCheckedTripleEquals
 
   "RetCalc.futureCapital" should {
     "calculate the amount of savings I will have in n months" in {
-      val actual   = RetCalc futureCapital (FixedReturns(0.04), 25 * 12, 3000, 2000, 10000)
+      val actual = RetCalc futureCapital (FixedReturns(0.04), 25 * 12, 3000, 2000, 10000)
       val expected = 541267.1990
       actual should ===(expected)
     }
@@ -17,7 +17,7 @@ class RetCalcSpec extends AnyWordSpec with Matchers with TypeCheckedTripleEquals
 
   "RetCalc.futureCapital" should {
     "calculate how much savings will be left after having taken a pension for n months" in {
-      val actual   = RetCalc futureCapital (FixedReturns(0.04), 40 * 12, 0, 2000, 541267.1990)
+      val actual = RetCalc futureCapital (FixedReturns(0.04), 40 * 12, 0, 2000, 541267.1990)
       val expected = 309867.53176
       actual should ===(expected)
     }
@@ -52,13 +52,13 @@ class RetCalcSpec extends AnyWordSpec with Matchers with TypeCheckedTripleEquals
 
   "RetCalc.nbOfMonthsSaving" should {
     "calculate how long I need to save before I can retire" in {
-      val actual   = RetCalc nbOfMonthsSaving (FixedReturns(0.04), params)
+      val actual = RetCalc nbOfMonthsSaving (FixedReturns(0.04), params)
       val expected = 23 * 12 + 1
       actual should ===(expected)
     }
 
     "not crash if the resulting nbOfMonths is very high" in {
-      val actual   = RetCalc nbOfMonthsSaving (FixedReturns(0.01), RetCalcParams(40 * 12, 3000, 2999, 0))
+      val actual = RetCalc nbOfMonthsSaving (FixedReturns(0.01), RetCalcParams(40 * 12, 3000, 2999, 0))
       val expected = 8280
       actual should ===(expected)
     }
