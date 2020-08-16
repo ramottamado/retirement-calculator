@@ -5,6 +5,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class SimulatePlanAppIT extends AnyWordSpec with Matchers with TypeCheckedTripleEquals {
+
   "SimulatePlanApp.strMain" should {
     "simulate a retirement plan" in {
       val actualResult = SimulatePlanApp.strMain(
