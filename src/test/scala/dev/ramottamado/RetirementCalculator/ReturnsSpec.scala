@@ -51,7 +51,7 @@ class ReturnsSpec extends AnyWordSpec with Matchers with TypeCheckedTripleEquals
         InflationData("2117.03", 102.0)
       )
 
-      val returns = Returns.fromEquityandInflationData(equities, inflations)
+      val returns = Returns.fromEquityAndInflationData(equities, inflations)
 
       returns should ===(
         VariableReturns(

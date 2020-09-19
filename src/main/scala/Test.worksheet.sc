@@ -89,3 +89,70 @@ val c = for {
 } yield {
   x + y
 }
+
+import cats.data.NonEmptyList
+
+NonEmptyList(1, List(2, 3))
+NonEmptyList.fromList(List(1, 2, 3))
+NonEmptyList.fromList(List.empty[Int])
+
+val nel = NonEmptyList.of(1, 2, 3)
+
+nel.head
+
+nel.tail
+
+nel.map(_ + 1)
+
+nel.toList
+
+import cats.data._
+import cats.data.Validated._
+import cats.implicits._
+
+val valid1: Validated[NonEmptyList[String], Int] = Valid(1)
+
+val valid2 = 2.validNel[String]
+
+(valid1, valid2).mapN { case (i1, i2) => i1 + i2 }
+
+val invalid3: ValidatedNel[String, Int] = Invalid(NonEmptyList.of("error"))
+
+val invalid4 = "another error".invalidNel[Int]
+(valid1, valid2, invalid3, invalid4).mapN { case (i1, i2, i3, i4) => i1 + i2 + i3 + i4 }
+
+sealed abstract class RetCalcError(val message: String)
+
+object RetCalcError {
+  type RetCalcResult[A] = ValidatedNel[RetCalcError, A]
+
+  case class MoreExpensesThanIncome(
+    income: Double,
+    expenses: Double
+  ) extends RetCalcError(s"Expenses: $expenses >= $income. You will never be able to save enough to retire!")
+
+  case class ReturnMonthOutOfBounds(
+    month: Int,
+    maximum: Int
+  ) extends RetCalcError(s"Cannot get the return for month $month. Accepted range: 0 to $maximum")
+
+  case class InvalidNumber(
+    name: String,
+    value: String
+  ) extends RetCalcError(s"Invalid number for $name: $value")
+
+  case class InvalidArgument(
+    name: String,
+    value: String,
+    expectedFormat: String
+  ) extends RetCalcError(s"Invalid format for $name. Expected: $expectedFormat, actual: $value")
+
+}
+
+def parseInt(name: String, value: String): RetCalcError.RetCalcResult[Int] = {
+  Validated
+    .catchOnly[NumberFormatException](value.toInt)
+    .leftMap(_ => NonEmptyList.of(RetCalcError.InvalidNumber(name, value)))
+}
+
+val loko = parseInt("lol", ".8")

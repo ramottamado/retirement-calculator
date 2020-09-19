@@ -16,7 +16,7 @@ object Returns {
       case VariableReturn(monthId, monthlyRate) => Right(monthlyRate)
     }
 
-  def fromEquityandInflationData(equities: Vector[EquityData], inflations: Vector[InflationData]): VariableReturns = {
+  def fromEquityAndInflationData(equities: Vector[EquityData], inflations: Vector[InflationData]): VariableReturns = {
     VariableReturns(
       ((equities zip inflations) sliding 2).collect {
         case (prevEquity, prevInflation) +: (equity, inflation) +: Vector() =>

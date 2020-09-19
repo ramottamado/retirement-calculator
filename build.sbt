@@ -8,8 +8,13 @@ ThisBuild / organizationName := "Tamado Sitohang"
 lazy val root = (project in file("."))
   .settings(
     name := "RetirementCalculator",
-    libraryDependencies += scalaTest % Test
+    libraryDependencies ++= Seq(
+          scalaTest % Test,
+          "org.typelevel" %% "cats-core" % "1.0.1"
+        )
   )
+
+scalacOptions += "-Ypartial-unification"
 
 mainClass in Compile := Some("dev.ramottamado.RetirementCalculator.SimulatePlanApp")
 
