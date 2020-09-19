@@ -1,5 +1,6 @@
 package dev.ramottamado.RetirementCalculator
 
+import dev.ramottamado.RetirementCalculator.RetCalcError.MoreExpensesThanIncome
 import scala.annotation.tailrec
 
 case class RetCalcParams(nbOfMonthsInRetirement: Int, netIncome: Int, currentExpenses: Int, initialCapital: Double)
@@ -12,11 +13,15 @@ object RetCalc {
     netIncome: Int,
     currentExpenses: Int,
     initialCapital: Double
-  ): Double = {
+  ): Either[RetCalcError, Double] = {
     val monthlySavings = netIncome - currentExpenses
 
-    (0 until nbOfMonths foldLeft initialCapital) { (accumulated, month) =>
-      accumulated * (1 + Returns.monthlyRate(returns, month)) + monthlySavings
+    (0 until nbOfMonths).foldLeft[Either[RetCalcError, Double]](Right(initialCapital)) {
+      case (accumulated, month) =>
+        for {
+          acc <- accumulated
+          monthlyRate <- Returns.monthlyRate(returns, month)
+        } yield acc * (1 + monthlyRate) + monthlySavings
     }
   }
 
@@ -24,39 +29,40 @@ object RetCalc {
     returns: Returns,
     nbOfMonthsSaving: Int,
     params: RetCalcParams
-  ): (Double, Double) = {
+  ): Either[RetCalcError, (Double, Double)] = {
     import params._
-    val capitalAtRetirement = futureCapital(returns, nbOfMonthsSaving, netIncome, currentExpenses, initialCapital)
-
-    val capitalAfterDeath = futureCapital(
-      OffsetReturns(returns, nbOfMonthsSaving),
-      nbOfMonthsInRetirement,
-      0,
-      currentExpenses,
-      capitalAtRetirement
-    )
-
-    (capitalAtRetirement, capitalAfterDeath)
+    for {
+      capitalAtRetirement <- futureCapital(returns, nbOfMonthsSaving, netIncome, currentExpenses, initialCapital)
+      capitalAfterDeath <- futureCapital(
+        OffsetReturns(returns, nbOfMonthsSaving),
+        nbOfMonthsInRetirement,
+        0,
+        currentExpenses,
+        capitalAtRetirement
+      )
+    } yield (capitalAtRetirement, capitalAfterDeath)
   }
 
   def nbOfMonthsSaving(
     returns: Returns,
     params: RetCalcParams
-  ): Int = {
+  ): Either[RetCalcError, Int] = {
     import params._
     @tailrec
-    def loop(months: Int): Int = {
-      val (capitalAtRetirement, capitalAfterDeath) = simulatePlan(returns, months, params)
-
-      if (capitalAfterDeath > 0.0)
-        months
-      else
-        loop(months + 1)
+    def loop(months: Int): Either[RetCalcError, Int] = {
+      simulatePlan(returns, months, params) match {
+        case Right((capitalAtRetirement, capitalAfterDeath)) =>
+          if (capitalAfterDeath > 0.0)
+            Right(months)
+          else
+            loop(months + 1)
+        case Left(err) => Left(err)
+      }
     }
     if (netIncome > currentExpenses)
       loop(0)
     else
-      Int.MaxValue
+      Left(MoreExpensesThanIncome(netIncome, currentExpenses))
   }
 
 }
